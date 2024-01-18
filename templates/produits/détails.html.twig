@@ -17,9 +17,15 @@
 <p>Nom : {{ produit.nomproduit }}</p>
 <p>Prix : {{ produit.prixproduit }}</p>
 <p>Lieu de disponibilité : {{ produit.lieuproduit }}</p>
-<div class="col">
-  <img src="/.jpg" class="img-fluid img-image" alt="image">
-</div>
+<div class="produit-photos">
+    {% if photo is not empty %}
+        {% for photo in photos %}
+            <img src="{{ asset('images/' ~ produit.getFkRayon().libelle ~ '/' ~ photo.libelle) }}" alt="Image Produit">
+        {% endfor %}
+    {% else %}
+        <p>:no image</p>
+    {% endif %}
+
 
 <button onclick><a href="{{ path('app_commande', {'id': produit.id}) }}">ajouter au panier</a></button>
 {#<p>Quantité disponible : {{ produits.quantitéproduit }}</p>#}

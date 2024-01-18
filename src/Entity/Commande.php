@@ -36,7 +36,7 @@ class Commande
     public function __construct()
     {
        // $this->quanitite = new ArrayCollection();
-        //$this->produits = new ArrayCollection();
+        $this->produits = new ArrayCollection();
         $this->fk_produits = new ArrayCollection();
     }
 
@@ -80,13 +80,18 @@ class Commande
 
     public function addProduit(Produits $produit): static
     {
+
+        
         if (!$this->produits->contains($produit)) {
             $this->produits->add($produit);
             $produit->addQuantite($this);
         }
 
         return $this;
+
     }
+
+    
 
     public function removeProduit(Produits $produit): static
     {

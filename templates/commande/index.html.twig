@@ -3,7 +3,7 @@
 {% block title %}Hello CommandeController!{% endblock %}
 
 {% block body %}
-<P>Votre panier est vide</P>
+<P></P>
 <main class="container">
         <section class="row">
             <div class="col-12">
@@ -22,20 +22,20 @@
 {% for p in data %}
 
     <tr>
-        <td>{{ p.produit.nom }}</td>
-        <td>{{ p.produit.prix / 100 }} €</td>
+        <td>{{ p.produit.nomproduit }}</td>
+        <td>{{ p.produit.prixproduit }} €</td>
         <td>{{ p.quantite }}</td>
-        <td>{{ p.quantite * p.produit.prix / 100 }} €</td>
+        <td>{{ p.quantite * p.produit.prixproduit}} €</td>
         <td>
-            <a href="{{ path('cart_add', {id: p.produit.id}) }}" class="btn btn-success">+</a>
-            <a href="{{ path('cart_remove', {id: p.produit.id}) }}" class="btn btn-warning">-</a>
-            <a href="{{ path('cart_delete', {id: p.produit.id}) }}" class="btn btn-danger">Supprimer</a>
+            <a href="{{ path('app_commande', {id: p.produit.id}) }}" class="btn btn-success">+</a>
+            <a href="{{ path('remove', {id: p.produit.id}) }}" class="btn btn-warning">-</a>
+            <a href="{{ path('delete', {id: p.produit.id}) }}" class="btn btn-danger">Supprimer</a>
         </td>
     </tr>
 
-{{p['produit'].nomproduit}} - {{p['quantite']}}
+{#{{p['produit'].nomproduit}} - {{p['quantite']}}
 <button onclick "<a href={{ path('app_detailsproduits', {'id': p['produit'].id}) }}></a>">ajouter au panier</button>
-
+#}
 
     
                             
@@ -45,5 +45,17 @@
     </tr>    
 {% endfor %}
                     </tbody>
+                     <tfoot>
+                        <tr>
+                            <td colspan="3">Total</td>
+                            <td>{{ total }} €</td>
+                            <td>
+                                <a href="{{ path('empty') }}" class="btn btn-danger">Vider</a>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <a href="{{ path('add') }}" class="btn btn-primary">Valider le panier</a>
+            </div>
 
 {% endblock %}

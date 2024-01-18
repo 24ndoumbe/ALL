@@ -12,48 +12,8 @@ use App\Repository\ProduitsRepository;
 
 class CommandeController extends AbstractController
 {
-    #[Route('/commande/{id}', name: 'app_commande')]
-    public function add($id,ProduitsRepository $ProduitsRepository, SessionInterface $session)
-    {
-        //On récupère l'id du produit
-        $produit = $ProduitsRepository->find($id);
-        
-        //$id = $ProduitsRepository->getId();
-        // On récupère le panier existant
-        $panier = $session->get('panier', []);
 
-        // On ajoute le produit dans le panier s'il n'y est pas encore
-        // Sinon on incrémente sa quantité
-        if(empty($panier[$id])){
-            $panier[$id] = 1;
-        }else{
-            $panier[$id]++;
-        }
-
-        $session->set('panier', $panier);
-        $data = [];
-        $total = 0;
-
-        foreach($panier as $id => $quantite){
-
-            $data[] = [
-                'produit' => $produit,
-                'quantite' => $quantite
-            ];
-            $total += $produit->getPrixProduit() * $quantite;
-        }
-        
-        
-
-        //On redirige vers la page du panier
-        
-        return $this->render('commande/index.html.twig', [
-            'data' => $data
-        ]);
-
-    }
-
-    #[Route('/commande', name: 'panier')]
+    #[Route('/', name: 'index')]
     public function index(SessionInterface $session, ProduitsRepository $produitsRepository)
     {
         $panier = $session->get('panier', []);
@@ -72,16 +32,44 @@ class CommandeController extends AbstractController
             $total += $produit->getPrixProduit() * $quantite;
         }
         
-        return $this->render('commande/index.html.twig', ['data' => $data, 'total' => $total]);
+        return $this->render('commande/index.html.twig', compact('data', 'total'));
+    }
+
+
+    #[Route('/commande/{id}', name: 'app_commande')]
+    public function add($id,ProduitsRepository $ProduitsRepository, SessionInterface $session)
+    {
+        //On récupère l'id du produit
+        $produit = $ProduitsRepository->find($id);
+        
+       // $id = $ProduitsRepository->getId();
+        // On récupère le panier existant
+        $panier = $session->get('panier', []);
+
+        // On ajoute le produit dans le panier s'il n'y est pas encore
+        // Sinon on incrémente sa quantité
+        if(empty($panier[$id])){
+            $panier[$id] = 1;
+        }else{
+            $panier[$id]++;
+        }
+
+        $session->set('panier', $panier);
+
+        //On redirige vers la page du panier
+        
+        return $this->redirectToRoute('index');
+
     }
 
    
     
 
     #[Route('/remove/{id}', name: 'remove')]
-    public function remove(Produits $produit, SessionInterface $session)
+    public function remove($id,ProduitsRepository $ProduitsRepository, SessionInterface $session)
     {
         //On récupère l'id du produit
+        $produit = $ProduitsRepository->find($id);
         $id = $produit->getId();
 
         // On récupère le panier existant
@@ -100,13 +88,18 @@ class CommandeController extends AbstractController
         $session->set('panier', $panier);
         
         //On redirige vers la page du panier
-        return $this->redirectToRoute('commande_index');
+        return $this->redirectToRoute('index');
+
+        
     }
 
+
+
     #[Route('/delete/{id}', name: 'delete')]
-    public function delete(Produits $produit, SessionInterface $session)
+    public function delete($id,ProduitsRepository $ProduitsRepository, SessionInterface $session)
     {
         //On récupère l'id du produit
+        $produit = $ProduitsRepository->find($id);
         $id = $produit->getId();
 
         // On récupère le panier existant
@@ -119,7 +112,7 @@ class CommandeController extends AbstractController
         $session->set('panier', $panier);
         
         //On redirige vers la page du panier
-        return $this->redirectToRoute('commande_index');
+        return $this->redirectToRoute('index');
     }
 
     #[Route('/empty', name: 'empty')]
@@ -127,7 +120,7 @@ class CommandeController extends AbstractController
     {
         $session->remove('panier');
 
-        return $this->redirectToRoute('commande_index');
+        return $this->redirectToRoute('index');
     }
 }
 

@@ -47,7 +47,7 @@ class Produits
     public function __construct()
     {
        // $this->commandes = new ArrayCollection();
-        //$this->quantite = new ArrayCollection();
+        $this->quantite = new ArrayCollection();
         $this->fk_commande = new ArrayCollection();
     }
 
@@ -130,6 +130,16 @@ class Produits
         if (!$this->quantite->contains($quantite)) {
             $this->quantite->add($quantite);
         }
+
+        
+
+        return $this;
+    }
+
+    public function setQuantite($quantite)
+    {
+        
+        $this->quantite = $quantite;
 
         return $this;
     }
