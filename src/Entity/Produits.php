@@ -47,7 +47,7 @@ class Produits
     public function __construct()
     {
        // $this->commandes = new ArrayCollection();
-        $this->quantite = new ArrayCollection();
+       // $this->quantite = new ArrayCollection();
         $this->fk_commande = new ArrayCollection();
     }
 
@@ -116,11 +116,11 @@ class Produits
         return $this;
     }
 
-
+/*
     /**
      * @return Collection<int, commande>
      */
-    public function getQuantite(): Collection
+    /*public function getQuantite(): Collection
     {
         return $this->quantite;
     }
@@ -147,6 +147,27 @@ class Produits
     public function removeQuantite(commande $quantite): static
     {
         $this->quantite->removeElement($quantite);
+
+        return $this;
+    }*/
+
+
+    
+    /**
+     * @return int|null
+     */
+    public function getQuantite(): ?int
+    {
+        return $this->quantite;
+    }
+
+    /**
+     * @param int|null $quantite
+     * @return $this
+     */
+    public function setQuantite(?int $quantite): static
+    {
+        $this->quantite = $quantite;
 
         return $this;
     }

@@ -50,7 +50,7 @@ class Commande
         return $this->libelle;
     }
 
-    public function setLibelle(string $libelle): static
+    public function setLibelle(?string $libelle): self
     {
         $this->libelle = $libelle;
 
@@ -84,7 +84,7 @@ class Commande
         
         if (!$this->produits->contains($produit)) {
             $this->produits->add($produit);
-            $produit->addQuantite($this);
+           // $produit->addQuantite($this);
         }
 
         return $this;

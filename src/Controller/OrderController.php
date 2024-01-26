@@ -30,7 +30,7 @@ class OrderController extends AbstractController
 
         if($panier === []){
             $this->addFlash('message', 'Votre panier est vide');
-            return $this->redirectToRoute('rayon');
+            return $this->redirectToRoute('app_produits');
         }
 
         //Le panier n'est pas vide, on crée la commande
@@ -40,32 +40,30 @@ class OrderController extends AbstractController
        // $commande->setUsers($this->getUser());
         
         // On parcourt le panier pour créer les détails de commande
-        foreach($panier as $item => $quantite){
-            $produits = new produits();
-
-            // On va chercher le produit
+        foreach ($panier as $item => $quantite) {
             $produit = $produitsRepository->find($item);
-            
-            /*$prixproduit = $produit->getPrixproduit();
-           // $prixproduit = $produit->getQuantite();
-
-            // On crée le détail de commande
-           
-            $produit->setPrixproduit($prixproduit);
-            $produit->setQuantite($quantite);
-            //$prixproduit = $produit->getQuantite();*/
-
             $commande->addProduit($produit);
         }
+        
+        // Assurez-vous que libelle est correctement défini
+        $libelle = $commande->getLibelle();
+        if ($libelle === null) {
+            // Gérez le cas où libelle est null
+            $this->addFlash('error', 'Le libelle de la commande est manquant.');
+        } else {
+            // Persistez et flush
+            $em->persist($commande);
+            $em->flush();
+        }
 
-        // On persiste et on flush
         $em->persist($commande);
         $em->flush();
+        
 
         $session->remove('panier');
 
         $this->addFlash('message', 'Commande créée avec succès');
-        return $this->redirectToRoute('rayon');
+        return empty($panier) ? $this->redirectToRoute('app_produits') : $this->redirectToRoute('add');
     }
 }
 
