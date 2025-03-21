@@ -44,6 +44,8 @@ class CommandeController extends AbstractController
         
        // $id = $ProduitsRepository->getId();
         // On récupère le panier existant
+
+        
         $panier = $session->get('panier', []);
 
         // On ajoute le produit dans le panier s'il n'y est pas encore

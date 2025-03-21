@@ -6,8 +6,10 @@ use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
+#[ApiResource]
 class Commande
 {
     #[ORM\Id]
@@ -27,15 +29,12 @@ class Commande
     #[ORM\ManyToMany(targetEntity: produits::class, inversedBy: 'commandes')]
     private Collection $fk_produits;
 
-    //#[ORM\ManyToMany(targetEntity: produits::class, inversedBy: 'commandes')]
-    //private Collection $quanitite;
-
-    //#[ORM\ManyToMany(targetEntity: Produits::class, mappedBy: 'quantite')]
-    //private Collection $produits;
+    #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: "commandes")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Client $client = null;
 
     public function __construct()
     {
-       // $this->quanitite = new ArrayCollection();
         $this->produits = new ArrayCollection();
         $this->fk_produits = new ArrayCollection();
     }
@@ -53,7 +52,6 @@ class Commande
     public function setLibelle(?string $libelle): self
     {
         $this->libelle = $libelle;
-
         return $this;
     }
 
@@ -65,10 +63,8 @@ class Commande
     public function setQuantite(int $quantite): static
     {
         $this->quantite = $quantite;
-
         return $this;
     }
-
 
     /**
      * @return Collection<int, Produits>
@@ -80,25 +76,15 @@ class Commande
 
     public function addProduit(Produits $produit): static
     {
-
-        
         if (!$this->produits->contains($produit)) {
             $this->produits->add($produit);
-           // $produit->addQuantite($this);
         }
-
         return $this;
-
     }
-
-    
 
     public function removeProduit(Produits $produit): static
     {
-        if ($this->produits->removeElement($produit)) {
-            $produit->removeQuantite($this);
-        }
-
+        $this->produits->removeElement($produit);
         return $this;
     }
 
@@ -115,14 +101,23 @@ class Commande
         if (!$this->fk_produits->contains($fkProduit)) {
             $this->fk_produits->add($fkProduit);
         }
-
         return $this;
     }
 
     public function removeFkProduit(produits $fkProduit): static
     {
         $this->fk_produits->removeElement($fkProduit);
+        return $this;
+    }
 
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): static
+    {
+        $this->client = $client;
         return $this;
     }
 }

@@ -3,13 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ApiResource]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -23,9 +27,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -34,8 +35,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $nom_client = null;
-
-   
 
     #[ORM\Column(length: 255)]
     private ?string $password_client = null;
@@ -52,6 +51,14 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $email_client = null;
 
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: "client")]
+    private Collection $commandes;
+
+    public function __construct()
+    {
+        $this->commandes = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -65,42 +72,27 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): string
     {
         return $this->password;
@@ -109,13 +101,9 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
@@ -130,7 +118,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPrenomClient(string $prenom_client): static
     {
         $this->prenom_client = $prenom_client;
-
         return $this;
     }
 
@@ -142,11 +129,8 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNomClient(string $nom_client): static
     {
         $this->nom_client = $nom_client;
-
         return $this;
     }
-
-   
 
     public function getPasswordClient(): ?string
     {
@@ -156,7 +140,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPasswordClient(string $password_client): static
     {
         $this->password_client = $password_client;
-
         return $this;
     }
 
@@ -168,7 +151,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAdresseClient(string $adresse_client): static
     {
         $this->adresse_client = $adresse_client;
-
         return $this;
     }
 
@@ -180,7 +162,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephoneClient(int $telephone_client): static
     {
         $this->telephone_client = $telephone_client;
-
         return $this;
     }
 
@@ -192,7 +173,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNbEnfantClient(int $nb_enfant_client): static
     {
         $this->nb_enfant_client = $nb_enfant_client;
-
         return $this;
     }
 
@@ -204,6 +184,34 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmailClient(string $email_client): static
     {
         $this->email_client = $email_client;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            if ($commande->getClient() === $this) {
+                $commande->setClient(null);
+            }
+        }
 
         return $this;
     }
